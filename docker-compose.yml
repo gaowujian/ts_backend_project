@@ -1,0 +1,29 @@
+version: "2.4"
+services:
+  node:
+    container_name: "restful_node_container"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    networks:
+      - back-tier
+    depends_on:
+      - db
+  db:
+    container_name: "restful_db_container"
+    image: mysql:5.7.35
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ts_backend_project
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - back-tier
+volumes:
+  db_data:
+    driver: local
+networks:
+  back-tier:
+    driver: bridge
