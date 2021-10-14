@@ -8,7 +8,14 @@ User.init(
     password: DataTypes.STRING,
     email: DataTypes.STRING,
   },
-  { sequelize, modelName: "user" }
+  {
+    sequelize,
+    modelName: "user",
+    paranoid: true,
+
+    // 如果要为 deletedAt 列指定自定义名称
+    deletedAt: "destroyTime",
+  }
 );
 
 //如果你希望 Sequelize 根据你的模型定义自动创建表(或根据需要进行修改),你可以使用sync方法,

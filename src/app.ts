@@ -12,12 +12,14 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+console.log("hello world");
 
 app.use(function (_req, _res, next) {
   next(createError(404));
 });
 
 app.use(function (error: any, _req: Request, res: Response, _next: NextFunction) {
+  console.dir(error);
   res.status(error.status || statusCode.INTERNAL_SERVER_ERROR);
   res.json({
     success: false,
