@@ -35,6 +35,7 @@ router.get("/:id", async function (req: Request, res: Response, next: NextFuncti
 router.post("/", async function (req: Request, res: Response, next: NextFunction) {
   try {
     let user = req.body;
+    // 插入数据的时候，需要根据业务逻辑进行一系列校验
     const existed = await User.findOne({
       where: {
         username: user.username,
@@ -55,20 +56,22 @@ router.post("/", async function (req: Request, res: Response, next: NextFunction
 });
 router.put("/:id", async function (req: Request, res: Response, next: NextFunction) {
   try {
-    let id = req.params.id;
-    let update = req.body;
-    let user = await User.findByPk(id);
-    if (!user) {
+    // 更新的时候，根据返回值判断是否更新即可，没必要先find再更新，这样操作更通用些
+    const [rows] = await User.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
+    });
+    if (rows === 0) {
       res.json({
         success: false,
-        msg: "用户id不存在",
+        msg: "用户更新失败",
       });
     } else {
-      // 如果update的字段有误，那么就不会更新数据，不会出现异常
-      user = await user.update(update);
       res.json({
         success: true,
-        data: user,
+        msg: "用户更新成功",
+        data: rows,
       });
     }
   } catch (error: any) {
@@ -84,7 +87,17 @@ router.delete("/:id", async function (req: Request, res: Response, next: NextFun
       },
     });
     // 通知客户端删除记录的条数，客户端判断删除操作是否成功
-    res.json(rows);
+    if (rows === 0) {
+      res.json({
+        success: false,
+        msg: "没有找到可删除的用户",
+      });
+    } else {
+      res.json({
+        success: true,
+        msg: "用户删除成功",
+      });
+    }
   } catch (error: any) {
     next(createError(statusCode.INTERNAL_SERVER_ERROR, error));
   }

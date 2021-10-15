@@ -23,6 +23,7 @@ app.use(function (error: any, _req: Request, res: Response, _next: NextFunction)
   res.status(error.status || statusCode.INTERNAL_SERVER_ERROR);
   res.json({
     success: false,
+    msg: error.message,
     error,
   });
 });
