@@ -5,22 +5,11 @@ import { User } from "../model";
 import statusCode from "http-status-codes";
 router.get("/", async function (req: Request, res: Response, next: NextFunction) {
   try {
-    const { username } = req.query;
-    if (username) {
-      const user = await User.findOne({
-        where: {
-          username,
-        },
-      });
-      if (user) {
-        res.json({ success: true, data: user });
-      } else {
-        res.json({ success: false, msg: `用户${username}没有找到` });
-      }
-    } else {
-      let users = await User.findAll();
-      res.json(users);
-    }
+    // 支持任何条件的查询语句，可以用来查询全列表信息，数据是否存在等
+    let users = await User.findAll({
+      where: req.query,
+    });
+    res.json(users);
   } catch (error: any) {
     next(createError(statusCode.INTERNAL_SERVER_ERROR, error));
   }
@@ -88,20 +77,14 @@ router.put("/:id", async function (req: Request, res: Response, next: NextFuncti
 });
 router.delete("/:id", async function (req: Request, res: Response, next: NextFunction) {
   try {
-    let id = req.params.id;
-    let user = await User.findByPk(id);
-    if (!user) {
-      res.json({
-        success: false,
-        msg: "用户id不存在",
-      });
-    } else {
-      await user.destroy();
-      res.json({
-        success: true,
-        data: user,
-      });
-    }
+    // 不需要验证是否存在，直接删除
+    const rows = await User.destroy({
+      where: {
+        id: req.params.id,
+      },
+    });
+    // 通知客户端删除记录的条数，客户端判断删除操作是否成功
+    res.json(rows);
   } catch (error: any) {
     next(createError(statusCode.INTERNAL_SERVER_ERROR, error));
   }
