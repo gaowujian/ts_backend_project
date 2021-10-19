@@ -47,6 +47,7 @@ router.post("/", async function (req: Request, res: Response, next: NextFunction
       user = await User.create(user);
       res.status(201).json({
         success: true,
+        msg: "用户创建成功",
         data: user,
       });
     }

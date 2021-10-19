@@ -11,10 +11,10 @@ User.init(
   {
     sequelize,
     modelName: "user",
-    paranoid: true,
+    // paranoid: true,
 
     // 如果要为 deletedAt 列指定自定义名称
-    deletedAt: "destroyTime",
+    // deletedAt: "destroyTime",
   }
 );
 
